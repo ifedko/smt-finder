@@ -1,0 +1,14 @@
+.DS_Store
+.vagrant
+.idea/
+/frontend/node_modules/
+npm-debug.log
+/playbooks/vagrant.retry
+# phpstorm project files
+.idea
+
+# composer vendor dir
+/smt-finder/basic/vendor
+
+/smt-finder/basic/tests/_output/*
+/smt-finder/basic/tests/_support/_generated

@@ -1,0 +1,29 @@
+---
+- stat: path=/vagrant/smt-finder/basic/vendor
+  register: p
+
+- name: Install Smt-finder project dependencies
+  shell: cd /vagrant/smt-finder/basic && composer global require "fxp/composer-asset-plugin:^1.2.0" && composer install
+  when: p.stat.isdir is not defined
+
+- name: Copy across new php-fpm pool config for smt-finder
+  template:
+    src=php-fpm/smt-finder.conf.j2
+    dest=/etc/php5/fpm/pool.d/smt-finder.conf
+  notify:
+    - restart php-fpm
+
+- name: Copy across new virtual host for smt-finder
+  template:
+    src=nginx/smt-finder.conf.j2
+    dest=/etc/nginx/sites-available/smt-finder.conf
+  notify:
+    - restart nginx
+
+- name: Enable new vagrant virtual host for smt-finder
+  file:
+    src=/etc/nginx/sites-available/smt-finder.conf
+    dest=/etc/nginx/sites-enabled/smt-finder.conf
+    state=link
+  notify:
+    - restart nginx

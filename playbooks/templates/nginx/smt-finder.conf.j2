@@ -1,0 +1,60 @@
+upstream phpfpm {
+    #server unix:/var/run/php5-fpm.sock;
+    #avoid sockets for nginx-fpm on Linux, they are good for BSD
+    server 127.0.0.1:9000;
+}
+
+server {
+    charset utf-8;
+    client_max_body_size 128M;
+
+    server_name api.smt-finder.local;
+    listen 80;
+
+    root {{ document_root }}/smt-finder/basic/web;
+    index index.php index.html index.htm;
+
+    error_log /var/log/nginx/smt-finder_error.log;
+    access_log /var/log/nginx/smt-finder_access.log;
+
+    location / {
+        # Redirect everything that isn't a real file to index.php
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    # uncomment to avoid processing of calls to non-existing static files by Yii
+    #location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar)$ {
+    #    try_files $uri =404;
+    #}
+    #error_page 404 /404.html;
+
+    # deny accessing php files for the /assets directory
+    location ~ ^/assets/.*\.php$ {
+        deny all;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+
+        # Fix for server variables that behave differently under nginx/php-fpm than typically expected
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        # Include the standard fastcgi_params file included with nginx
+        include fastcgi_params;
+        fastcgi_param  PATH_INFO        $fastcgi_path_info;
+        fastcgi_index index.php;
+        # Override the SCRIPT_FILENAME variable set by fastcgi_params
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        # Pass to upstream PHP-FPM; This must match whatever you name your upstream connection
+        fastcgi_pass phpfpm;
+
+        #include fastcgi_params;
+        #fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        #fastcgi_pass 127.0.0.1:9000;
+        #fastcgi_pass unix:/var/run/php5-smt-finder.sock;
+        #try_files $uri =404;
+    }
+
+    location ~* /\. {
+        deny all;
+    }
+}
