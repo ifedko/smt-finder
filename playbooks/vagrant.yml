@@ -6,6 +6,9 @@
     document_root: /vagrant
     www_user: vagrant
     www_group: vagrant
+    dbname: smt-finder
+    dbuser: smt-finder
+    dbpassword: kcIxks92kI
   handlers:
     - name: restart nginx
       service: name=nginx state=restarted
@@ -17,9 +20,10 @@
   tasks:
     - include: tasks/base.yml
     - include: tasks/nginx.yml
+    - include: tasks/postgresql.yml
     - include: tasks/php.yml
     - include: tasks/php-devtools.yml
     - include: tasks/php-fpm.yml
     - include: tasks/npm.yml
-    - include: tasks/smt-finder.yml
+    - include: tasks/backend.yml
     - include: tasks/frontend.yml

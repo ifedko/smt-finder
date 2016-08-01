@@ -1,0 +1,29 @@
+---
+- stat: path=/vagrant/backend/basic/vendor
+  register: p
+
+- name: Install backend dependencies
+  shell: cd /vagrant/backend/basic && composer global require "fxp/composer-asset-plugin:^1.2.0" && composer install
+  when: p.stat.isdir is not defined
+
+- name: Copy across new php-fpm pool config for smt-finder
+  template:
+    src=php-fpm/backend.conf.j2
+    dest=/etc/php5/fpm/pool.d/backend.conf
+  notify:
+    - restart php-fpm
+
+- name: Copy across new virtual host for backend
+  template:
+    src=nginx/backend.conf.j2
+    dest=/etc/nginx/sites-available/backend.conf
+  notify:
+    - restart nginx
+
+- name: Enable new vagrant virtual host for backend
+  file:
+    src=/etc/nginx/sites-available/backend.conf
+    dest=/etc/nginx/sites-enabled/backend.conf
+    state=link
+  notify:
+    - restart nginx
