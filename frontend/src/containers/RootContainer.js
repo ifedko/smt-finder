@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
-import { Grid, Row, Col, Navbar } from 'react-bootstrap';
+import { Link, Router } from 'react-router';
+import { push } from 'react-router-redux';
+import { Grid, Row, Col, Navbar, Nav, NavItem } from 'react-bootstrap';
 
 class RootContainer extends Component {
     constructor(props) {
@@ -10,12 +11,13 @@ class RootContainer extends Component {
 
     static get propTypes() {
         return {
-            isLoading: PropTypes.bool.isRequired
+            isLoading: PropTypes.bool.isRequired,
+            routerPushPath: PropTypes.func.isRequired
         };
     }
 
     render() {
-        const { isLoading } = this.props;
+        const { isLoading, routerPushPath } = this.props;
         return (
             <div>
                 <Grid>
@@ -27,16 +29,28 @@ class RootContainer extends Component {
                                         <Link to="/">Smt finder</Link>
                                     </Navbar.Brand>
                                 </Navbar.Header>
-                                <Navbar.Collapse>
-                                    <ul>
-                                        <li>
-                                            <Link to="/">Поиск</Link>
-                                        </li>
-                                        <li>
-                                            <Link to="/history">История</Link>
-                                        </li>
-                                    </ul>
-                                </Navbar.Collapse>
+                                <Nav>
+                                    <NavItem
+                                        eventKey={1}
+                                        href="#"
+                                        onClick={(event) => {
+                                            event.preventDefault();
+                                            routerPushPath('/');
+                                        }}
+                                    >
+                                        Поиск
+                                    </NavItem>
+                                    <NavItem
+                                        eventKey={2}
+                                        href="#"
+                                        onClick={(event) => {
+                                            event.preventDefault();
+                                            routerPushPath('/history');
+                                        }}
+                                    >
+                                        История
+                                    </NavItem>
+                                </Nav>
                             </Navbar>
                         </Col>
                     </Row>
@@ -64,8 +78,17 @@ const mapStateToProps = (state) => {
     };
 };
 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        routerPushPath: (url) => {
+            dispatch(push(url));
+        }
+    };
+};
+
 RootContainer = connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(RootContainer);
 
 export default RootContainer;
