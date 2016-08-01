@@ -1,10 +1,8 @@
 ---
-- stat: path=/vagrant/frontend/node_modules
-  register: p
-
 - name: Install frontend Smt-finder project dependencies
-  shell: cd /vagrant/frontend && npm install
-  when: p.stat.isdir is not defined
+  shell: cd /vagrant/frontend && npm cache clean && npm install
+  become: true
+  become_user: vagrant
 
 - name: Copy across new virtual host for frontend smt-finder
   template:
@@ -19,4 +17,5 @@
     dest=/etc/nginx/sites-enabled/frontend.conf
     state=link
   notify:
+    - restart php-fpm
     - restart nginx

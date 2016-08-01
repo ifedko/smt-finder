@@ -1,6 +1,9 @@
 ---
-- name: Install npm
-  apt: name=npm state=present
+- name: Prepare Node.js installing
+  shell: curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 
-- name: Install node
-  apt: name=nodejs-legacy state=present
+- name: Install Node.js
+  shell: apt-get install -y nodejs
+
+- name: Install npm
+  shell: npm -g install npm@latest
