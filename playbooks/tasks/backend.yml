@@ -1,10 +1,6 @@
 ---
-- stat: path=/vagrant/backend/basic/vendor
-  register: p
-
 - name: Install backend dependencies
   shell: cd /vagrant/backend/basic && composer global require "fxp/composer-asset-plugin:^1.2.0" && composer install
-  when: p.stat.isdir is not defined
 
 - name: Copy across new php-fpm pool config for smt-finder
   template:

@@ -1,6 +1,6 @@
 ---
 - name: Install PostgreSQL
-  apt: name={{item}} state=present
+  apt: name={{item}} state=latest
   with_items:
     - postgresql
     - postgresql-contrib
@@ -9,6 +9,9 @@
 
 - name: Install setfacl support for resolving becoming user issue
   apt: pkg=acl
+
+- name: Ensure the PostgreSQL service is running
+  service: name=postgresql state=started enabled=yes
 
 - name: Create PostgreSQL database
   become: yes
