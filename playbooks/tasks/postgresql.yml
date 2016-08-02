@@ -7,7 +7,12 @@
     - libpq-dev
     - python-psycopg2
 
+- name: Install setfacl support for resolving becoming user issue
+  apt: pkg=acl
+
 - name: Create PostgreSQL database
+  become: yes
+  become_user: postgres
   postgresql_db: name={{dbname}}
 
 - name: Create user who has access to created database
