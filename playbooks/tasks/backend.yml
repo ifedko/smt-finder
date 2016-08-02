@@ -27,3 +27,6 @@
     state=link
   notify:
     - restart nginx
+
+- name: Run backend migration
+  shell: cd /vagrant/backend/basic && (yes | ./yii migrate)
