@@ -55,6 +55,8 @@ TODO
 * Backend (REST API)
     * search by input parameters (including data validation)
     * limit available REST methods
+    * tests
 * Frontend
     * use REST API methods for searching and data retrieving
     * add css in webpack
+    * tests
