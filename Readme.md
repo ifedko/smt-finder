@@ -27,6 +27,14 @@ repeat the whole procedure at any time. In order to start fresh just run
 ```vagrant destroy``` and ```vagrant up```. This will undo all you manual 
 changes done on the vagrant box and provide you with a clean setup.
 
+
+Troubleshooting
+---------------
+
+* If you get an error while provisioning:
+> Is the server running locally and accepting connections on Unix domain socket "/var/run/postgresql>/.s.PGSQL.5432"
+see how to fix http://stackoverflow.com/a/31316156
+
 Installed components
 --------------------
 
@@ -39,3 +47,14 @@ Installed components
 * [PHPUnit](https://phpunit.de/)
 * [npm](https://www.npmjs.com/)
 * [Node.js](https://nodejs.org/en/)
+
+
+TODO
+----
+
+* Backend (REST API)
+    * search by input parameters (including data validation)
+    * limit available REST methods
+* Frontend
+    * use REST API methods for searching and data retrieving
+    * add css in webpack

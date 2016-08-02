@@ -11,11 +11,11 @@ server {
     server_name api.smt-finder.local;
     listen 80;
 
-    root {{ document_root }}/smt-finder/basic/web;
+    root {{ document_root }}/backend/basic/web;
     index index.php index.html index.htm;
 
-    error_log /var/log/nginx/smt-finder_error.log;
-    access_log /var/log/nginx/smt-finder_access.log;
+    error_log /var/log/nginx/backend_error.log;
+    access_log /var/log/nginx/backend_access.log;
 
     location / {
         # Redirect everything that isn't a real file to index.php
@@ -50,7 +50,7 @@ server {
         #include fastcgi_params;
         #fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         #fastcgi_pass 127.0.0.1:9000;
-        #fastcgi_pass unix:/var/run/php5-smt-finder.sock;
+        #fastcgi_pass unix:/var/run/php5-backend.sock;
         #try_files $uri =404;
     }
 

@@ -8,7 +8,8 @@ npm-debug.log
 .idea
 
 # composer vendor dir
-/smt-finder/basic/vendor
+/backend/basic/vendor
 
-/smt-finder/basic/tests/_output/*
-/smt-finder/basic/tests/_support/_generated
+/backend/basic/tests/_output/*
+/backend/basic/tests/_support/_generated
+/backend/basic/api/runtime/*

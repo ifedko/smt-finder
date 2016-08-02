@@ -1,5 +1,5 @@
 [smt-finder]
-;listen = /var/run/php5-smt-finder.sock
+;listen = /var/run/php5-backend.sock
 listen = 127.0.0.1:9000
 listen.allowed_clients = 127.0.0.1
 listen.owner = {{ www_user }}
@@ -20,13 +20,13 @@ pm.max_spare_servers = 35
 pm.status_path = /fpm-status
 ping.path = /fpm-ping
 ping.response = pong
-chdir = /vagrant/smt-finder
+chdir = /vagrant/backend
 catch_workers_output = yes
 
 request_terminate_timeout = 180s
 
 ; The following php_admin_* settings below, override php.ini settings
-php_admin_value[error_log] = /vagrant/smt-finder/log/fpm-php-error.log
+php_admin_value[error_log] = /vagrant/backend/log/fpm-php-error.log
 
 ; The following settings are specifically used on development sites
 ; Should review/disable for production site
