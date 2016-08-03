@@ -41,6 +41,8 @@ const defaultState = {
 
 const historyList = (state = defaultState.list, action) => {
     switch (action.type) {
+        case 'SET_HISTORY_ITEMS':
+            return Object.assign({}, state, { items: action.items });
         case 'CHANGE_PAGE_OF_HISTORY_LIST':
             return Object.assign({}, state, { pageNumber: action.pageNumber });
         default:
@@ -50,6 +52,13 @@ const historyList = (state = defaultState.list, action) => {
 
 const historyDetails = (state = defaultState.details, action) => {
     switch (action.type) {
+        case 'SET_HISTORY_DETAILS':
+            return Object.assign({}, state, {
+                searchType: action.details.searchType,
+                url: action.details.url,
+                date: action.details.date,
+                items: action.details.items
+            });
         case 'CHANGE_PAGE_OF_HISTORY_DETAILS_LIST':
             return Object.assign({}, state, { itemsPageNumber: action.pageNumber });
         default:
