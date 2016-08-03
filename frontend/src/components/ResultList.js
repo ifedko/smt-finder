@@ -8,8 +8,8 @@ class ResultList extends Component {
             items: PropTypes.arrayOf(PropTypes.shape({
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
-                foundCount: PropTypes.number.isRequired,
+                createdAt: PropTypes.string.isRequired,
+                resultsCount: PropTypes.number.isRequired,
                 text: PropTypes.string
             })).isRequired,
             pagination: PropTypes.shape({
@@ -50,9 +50,9 @@ class ResultList extends Component {
                     <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{item.url}</td>
-                        <td>{item.date}</td>
+                        <td>{item.createdAt}</td>
                         <td>{this.getSearchTypeName(item.searchType, text)}</td>
-                        <td>{item.foundCount}</td>
+                        <td>{item.resultsCount}</td>
                         <td>
                             {item.searchType !== 'text' &&
                                 <Link to="/search-details">

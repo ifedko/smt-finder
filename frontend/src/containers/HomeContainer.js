@@ -23,7 +23,7 @@ class HomeContainer extends Component {
                     date: PropTypes.string.isRequired,
                     foundCount: PropTypes.number.isRequired,
                     text: PropTypes.string
-                }).isRequired
+                })
             }).isRequired,
             isLoading: PropTypes.bool.isRequired,
             setBackUrl: PropTypes.func.isRequired,

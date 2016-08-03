@@ -1,3 +1,54 @@
+import { CALL_API } from 'redux-api-middleware';
+
+const apiBaseUrl = 'http://api.smt-finder.local';
+const itemsOnPage = 20;
+
+export const fetchHistoryList = (offset) => {
+    return {
+        [CALL_API]: {
+            endpoint: `${apiBaseUrl}/v1/requests`,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        },
+        types: ['REQUEST', 'SUCCESS', 'FAILURE']
+    };
+}
+
+export const fetchResultDetail = (id) => {
+    return {
+        [CALL_API]: {
+            endpoint: `${apiBaseUrl}/v1/requests/${id}`,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            types: ['REQUEST', 'SUCCESS', 'FAILURE']
+        }
+    };
+}
+
+export const search = (url, searchType, text) => {
+    return {
+        [CALL_API]: {
+            endpoint: `${apiBaseUrl}/v1/search`,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                request: {
+                    url,
+                    searchType,
+                    text
+                }
+            }),
+            types: ['REQUEST', 'SUCCESS', 'FAILURE']
+        }
+    };
+}
+
 export const setIsLoading = (isLoading) => {
     return {
         type: 'SET_IS_LOADING',
@@ -33,6 +84,20 @@ export const changeSearchText = (searchText) => {
     }
 }
 
+export const setHistoryItems = (items) => {
+    return {
+        type: 'SET_HISTORY_ITEMS',
+        items
+    }
+}
+
+export const setHistoryDetails = (details) => {
+    return {
+        type: 'SET_HISTORY_DETAILS',
+        details
+    }
+}
+
 const setResult = (result) => {
     return {
         type: 'SET_SEARCH_RESULT',
@@ -44,6 +109,7 @@ export const submitSearchForm = (data) => {
     return (dispatch, getState) => {
         console.log('SUBMITTING DATA');
         dispatch(setIsLoading(true));
+        dispatch(search(data.url, data.searchType, data.text));
         // @todo load result by data
         const searchResult = {
             searchType: data.searchType,
@@ -57,6 +123,16 @@ export const submitSearchForm = (data) => {
             dispatch(setIsLoading(false));
         }, 2000);
     }
+}
+
+export const loadHistory = () => {
+    return (dispatch, getState) => {
+        dispatch(setIsLoading(true));
+        dispatch(fetchHistoryList()).then((items) => {
+            dispatch(setHistoryItems(items.payload));
+            dispatch(setIsLoading(false));
+        });
+    };
 }
 
 export const changePageOfHistoryList = (pageNumber) => {

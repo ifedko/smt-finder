@@ -7,7 +7,8 @@ class ResultItem extends Component {
             details: PropTypes.shape({
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
+                createdAt: PropTypes.string.isRequired,
+                resultsCount: PropTypes.number.isRequired,
                 items: PropTypes.array.isRequired,
                 itemsPageNumber: PropTypes.number.isRequired,
                 itemsPagesCount: PropTypes.number.isRequired,
@@ -44,7 +45,7 @@ class ResultItem extends Component {
     }
 
     render() {
-        const { details: { searchType, url, date, items, itemsPageNumber, itemsPagesCount }} = this.props;
+        const { details: { searchType, url, createdAt, items, itemsPageNumber, itemsPagesCount }} = this.props;
         const rows = [];
         items.forEach((value, index) => {
             rows.push(
@@ -65,7 +66,7 @@ class ResultItem extends Component {
         return (
             <div>
                 <h3>
-                    Результат поиска {this.getLabel(searchType, 'header')} на сайте {url} {date}
+                    Результат поиска {this.getLabel(searchType, 'header')} на сайте {url} {createdAt}
                 </h3>
                 {items.length === 0 &&
                     <Alert bsStyle="info">

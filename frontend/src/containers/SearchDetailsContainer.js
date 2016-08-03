@@ -11,7 +11,8 @@ class SearchDetailsContainer extends Component {
             details: PropTypes.shape({
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
+                createdAt: PropTypes.string.isRequired,
+                resultsCount: PropTypes.number.isRequired,
                 items: PropTypes.array.isRequired,
                 itemsPageNumber: PropTypes.number.isRequired,
                 itemsPagesCount: PropTypes.number.isRequired,

@@ -6,21 +6,21 @@ const defaultState = {
             {
                 searchType: 'links',
                 url: 'e2e4online.ru',
-                date: '16:20 16.06.2016',
-                foundCount: 152
+                createdAt: '16:20 16.06.2016',
+                resultsCount: 152
             },
             {
                 searchType: 'text',
                 url: 'e2e4online.ru',
-                date: '16:20 16.06.2016',
-                foundCount: 22,
+                createdAt: '16:20 16.06.2016',
+                resultsCount: 22,
                 searchValue: 'комплектующие'
             },
             {
                 searchType: 'images',
                 url: 'e2e4online.ru',
-                date: '16:20 16.06.2016',
-                foundCount: 78
+                createdAt: '16:20 16.06.2016',
+                resultsCount: 78
             }
         ],
         pageNumber: 3,
@@ -29,7 +29,8 @@ const defaultState = {
     details: {
         searchType: 'images',
         url: 'e2e4online.ru',
-        date: '16:20 16.06.2016',
+        createdAt: '16:20 16.06.2016',
+        resultsCount: 78,
         items: [
             "http://static1.squarespace.com/static/53323bb4e4b0cebc6a28ffa2/53573350e4b0758dd79db484/53d7ed16e4b042d1ea99f850/1406732832301/?format=1000w",
             "http://images2.fanpop.com/images/photos/4800000/kate-evangeline-lilly-4806637-1400-1050.jpg"
@@ -56,7 +57,8 @@ const historyDetails = (state = defaultState.details, action) => {
             return Object.assign({}, state, {
                 searchType: action.details.searchType,
                 url: action.details.url,
-                date: action.details.date,
+                createdAt: action.details.createdAt,
+                resultsCount: action.details.resultsCount,
                 items: action.details.items
             });
         case 'CHANGE_PAGE_OF_HISTORY_DETAILS_LIST':

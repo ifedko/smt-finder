@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { setBackUrl, changePageOfHistoryList } from '../actions';
+import { setBackUrl, changePageOfHistoryList, loadHistory } from '../actions';
 import ResultList from '../components/ResultList';
 
 class HistoryContainer extends Component {
@@ -9,8 +9,8 @@ class HistoryContainer extends Component {
             items: PropTypes.arrayOf(PropTypes.shape({
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
-                foundCount: PropTypes.number.isRequired
+                createdAt: PropTypes.string.isRequired,
+                resultsCount: PropTypes.number.isRequired
             })).isRequired,
             pagination: PropTypes.shape({
                 pageNumber: PropTypes.number.isRequired,
@@ -18,12 +18,14 @@ class HistoryContainer extends Component {
             }).isRequired,
             isLoading: PropTypes.bool.isRequired,
             setBackUrl: PropTypes.func.isRequired,
-            handleChangePage: PropTypes.func.isRequired
+            handleChangePage: PropTypes.func.isRequired,
+            init: PropTypes.func.isRequired
         };
     }
 
     componentWillMount() {
         this.props.setBackUrl('/history');
+        this.props.init();
     }
 
     render() {
@@ -57,6 +59,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         handleChangePage: (pageNumber) => {
             dispatch(changePageOfHistoryList(pageNumber));
+        },
+        init: () => {
+            dispatch(loadHistory());
         }
     };
 };
