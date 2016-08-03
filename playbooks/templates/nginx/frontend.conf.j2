@@ -12,5 +12,6 @@ server {
     access_log /var/log/nginx/frontend_access.log;
 
     location / {
+        try_files $uri $uri/ /index.html$is_args$args;
     }
 }
