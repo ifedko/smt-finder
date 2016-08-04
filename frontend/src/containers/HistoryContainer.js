@@ -11,7 +11,7 @@ class HistoryContainer extends Component {
                 url: PropTypes.string.isRequired,
                 createdAt: PropTypes.string.isRequired,
                 resultsCount: PropTypes.number.isRequired
-            })).isRequired,
+            })),
             pagination: PropTypes.shape({
                 pageNumber: PropTypes.number.isRequired,
                 pagesCount: PropTypes.number.isRequired
@@ -33,7 +33,7 @@ class HistoryContainer extends Component {
         return (
             <div>
                 <h1>История поиска</h1>
-                {!isLoading && items.length > 0 &&
+                {!isLoading && items && items.length > 0 &&
                     <ResultList items={items} pagination={pagination} handleChangePage={handleChangePage}/>
                 }
             </div>

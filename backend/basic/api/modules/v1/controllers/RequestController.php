@@ -3,6 +3,7 @@
 namespace app\api\modules\v1\controllers;
 
 use yii\rest\ActiveController;
+use yii\web\Response;
 
 class RequestController extends ActiveController
 {
@@ -20,6 +21,14 @@ class RequestController extends ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
+        $behaviors['contentNegotiator'] = [
+            'class' => 'yii\filters\ContentNegotiator',
+            'formats' => [
+                'text/html' => Response::FORMAT_JSON,
+                'application/json' => Response::FORMAT_JSON,
+                'application/xml' => Response::FORMAT_XML,
+            ],
+        ];
         $behaviors['corsFilter'] = [
             'class' => \yii\filters\Cors::className(),
             'cors' => [

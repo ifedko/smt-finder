@@ -11,7 +11,7 @@ server {
     server_name api.smt-finder.local;
     listen 80;
 
-    root {{ document_root }}/backend/basic/web;
+    root {{ document_root }}/backend/basic/api/web;
     index index.php index.html index.htm;
 
     error_log /var/log/nginx/backend_error.log;
@@ -46,12 +46,6 @@ server {
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
         # Pass to upstream PHP-FPM; This must match whatever you name your upstream connection
         fastcgi_pass phpfpm;
-
-        #include fastcgi_params;
-        #fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        #fastcgi_pass 127.0.0.1:9000;
-        #fastcgi_pass unix:/var/run/php5-backend.sock;
-        #try_files $uri =404;
     }
 
     location ~* /\. {

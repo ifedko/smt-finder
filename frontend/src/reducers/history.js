@@ -24,7 +24,8 @@ const defaultState = {
             }
         ],
         pageNumber: 3,
-        pagesCount: 5
+        pagesCount: 5,
+        isFetching: false
     },
     details: {
         searchType: 'images',
@@ -36,14 +37,22 @@ const defaultState = {
             "http://images2.fanpop.com/images/photos/4800000/kate-evangeline-lilly-4806637-1400-1050.jpg"
         ],
         itemsPageNumber: 2,
-        itemsPagesCount: 5
+        itemsPagesCount: 5,
+        isFetching: false
     }
 };
 
 const historyList = (state = defaultState.list, action) => {
     switch (action.type) {
-        case 'SET_HISTORY_ITEMS':
-            return Object.assign({}, state, { items: action.items });
+        case 'REQUEST_HISTORY':
+            return Object.assign({}, state, {
+                isFetching: true
+            });
+        case 'RECEIVE_HISTORY':
+            return Object.assign({}, state, {
+                isFetching: false,
+                items: action.items
+            });
         case 'CHANGE_PAGE_OF_HISTORY_LIST':
             return Object.assign({}, state, { pageNumber: action.pageNumber });
         default:
@@ -53,6 +62,19 @@ const historyList = (state = defaultState.list, action) => {
 
 const historyDetails = (state = defaultState.details, action) => {
     switch (action.type) {
+        case 'REQUEST_RESULT_DETAILS':
+            return Object.assign({}, state, {
+                isFetching: true
+            });
+        case 'RECEIVE_RESULT_DETAILS':
+            return Object.assign({}, state, {
+                isFetching: false,
+                searchType: action.searchType,
+                url: action.url,
+                createdAt: action.createdAt,
+                resultsCount: action.resultsCount,
+                items: action.items
+            });
         case 'SET_HISTORY_DETAILS':
             return Object.assign({}, state, {
                 searchType: action.details.searchType,
