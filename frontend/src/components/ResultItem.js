@@ -5,14 +5,19 @@ class ResultItem extends Component {
     static get propTypes() {
         return {
             details: PropTypes.shape({
-                searchType: PropTypes.string.isRequired,
-                url: PropTypes.string.isRequired,
-                createdAt: PropTypes.string.isRequired,
-                resultsCount: PropTypes.number.isRequired,
+                data: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    searchType: PropTypes.string.isRequired,
+                    url: PropTypes.string.isRequired,
+                    createdAt: PropTypes.string.isRequired,
+                    resultsCount: PropTypes.number.isRequired
+                }).isRequired,
                 items: PropTypes.array.isRequired,
-                itemsPageNumber: PropTypes.number.isRequired,
-                itemsPagesCount: PropTypes.number.isRequired,
-            }).isRequired,
+                pagination: PropTypes.shape({
+                    pageNumber: PropTypes.number.isRequired,
+                    pagesCount: PropTypes.number.isRequired
+                }).isRequired
+            }),
             handleChangePage: PropTypes.func.isRequired
         };
     }
@@ -45,40 +50,43 @@ class ResultItem extends Component {
     }
 
     render() {
-        const { details: { searchType, url, createdAt, items, itemsPageNumber, itemsPagesCount }} = this.props;
+        console.log('PROPS of RESULT ITEM', this.props);
+        const { details: { data, items, pagination } } = this.props;
         const rows = [];
-        items.forEach((value, index) => {
-            rows.push(
-                <tr key={index}>
-                    <td>{index}</td>
-                    <td>
-                        {searchType === 'images' &&
-                            <img className="img-thumbnail" width="200px" src={value} />
-                        }
-                        {(searchType === 'text' || searchType === 'links') &&
+        if (items) {
+            items.forEach((value, index) => {
+                rows.push(
+                    <tr key={index}>
+                        <td>{index}</td>
+                        <td>
+                            {data.searchType === 'images' &&
+                            <img className="img-thumbnail" width="200px" src={value}/>
+                            }
+                            {(data.searchType === 'text' || data.searchType === 'links') &&
                             {value}
-                        }
-                    </td>
-                </tr>
-            );
-        });
+                            }
+                        </td>
+                    </tr>
+                );
+            });
+        }
 
         return (
             <div>
                 <h3>
-                    Результат поиска {this.getLabel(searchType, 'header')} на сайте {url} {createdAt}
+                    Результат поиска {this.getLabel(data.searchType, 'header')} на сайте {data.url} {data.createdAt}
                 </h3>
-                {items.length === 0 &&
+                {rows.length === 0 &&
                     <Alert bsStyle="info">
                         Ничего не найдено :(
                     </Alert>
                 }
-                {items.length > 0 &&
+                {rows.length > 0 &&
                     <Table striped hover>
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>{this.getLabel(searchType, 'table')}</th>
+                                <th>{this.getLabel(data.searchType, 'table')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -86,7 +94,7 @@ class ResultItem extends Component {
                         </tbody>
                     </Table>
                 }
-                {(items.length > 0 && itemsPagesCount > 1) &&
+                {(rows.length > 0 && pagination.pagesCount > 1) &&
                     <Pagination
                         prev
                         next
@@ -94,9 +102,9 @@ class ResultItem extends Component {
                         last
                         ellipsis
                         boundaryLinks
-                        items={itemsPagesCount}
+                        items={pagination.pagesCount}
                         maxButtons={5}
-                        activePage={itemsPageNumber}
+                        activePage={pagination.pageNumber}
                         onSelect={this.handleSelectPage}
                     />
                 }

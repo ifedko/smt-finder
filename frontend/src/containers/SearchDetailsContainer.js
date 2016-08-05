@@ -1,25 +1,43 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { changePageOfHistoryDetailsList } from '../actions';
+import { loadResultDetails, changePageOfHistoryDetailsList } from '../actions';
 import ResultItem from '../components/ResultItem';
 
 class SearchDetailsContainer extends Component {
     static get propTypes() {
         return {
+            params: PropTypes.shape({
+                resultId: PropTypes.string
+            }),
             backUrl: PropTypes.string.isRequired,
             details: PropTypes.shape({
-                searchType: PropTypes.string.isRequired,
-                url: PropTypes.string.isRequired,
-                createdAt: PropTypes.string.isRequired,
-                resultsCount: PropTypes.number.isRequired,
+                data: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    searchType: PropTypes.string.isRequired,
+                    url: PropTypes.string.isRequired,
+                    createdAt: PropTypes.string.isRequired,
+                    resultsCount: PropTypes.number.isRequired
+                }),
                 items: PropTypes.array.isRequired,
-                itemsPageNumber: PropTypes.number.isRequired,
-                itemsPagesCount: PropTypes.number.isRequired,
-            }).isRequired,
+                pagination: {
+                    pageNumber: PropTypes.number.isRequired,
+                    pagesCount: PropTypes.number.isRequired
+                }
+            }),
             isLoading: PropTypes.bool.isRequired,
+            init: PropTypes.func.isRequired,
             handleChangePage: PropTypes.func.isRequired
         };
+    }
+
+    componentWillMount() {
+        const resultId = (this.props.params.resultId && Number(this.props.params.resultId) > 0)
+            ? Number(this.props.params.resultId)
+            : 0;
+        if (resultId > 0) {
+            this.props.init(resultId);
+        }
     }
 
     render() {
@@ -29,7 +47,7 @@ class SearchDetailsContainer extends Component {
                 <Link to={backUrl}>
                     <span className="glyphicon glyphicon-menu-left"></span> Назад
                 </Link>
-                {!isLoading &&
+                {!isLoading && details &&
                     <ResultItem details={details} handleChangePage={handleChangePage}/>
                 }
             </div>
@@ -47,6 +65,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        init: (resultId) => {
+            dispatch(loadResultDetails(resultId));
+        },
         handleChangePage: (pageNumber) => {
             dispatch(changePageOfHistoryDetailsList(pageNumber));
         }

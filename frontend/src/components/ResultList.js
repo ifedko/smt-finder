@@ -6,6 +6,7 @@ class ResultList extends Component {
     static get propTypes() {
         return {
             items: PropTypes.arrayOf(PropTypes.shape({
+                id: PropTypes.string.isRequired,
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
                 createdAt: PropTypes.string.isRequired,
@@ -57,7 +58,7 @@ class ResultList extends Component {
                         <td>{item.resultsCount}</td>
                         <td>
                             {item.searchType !== 'text' &&
-                                <Link to="/search-details">
+                                <Link to={`/search-details/${item.id}`}>
                                     <span className="glyphicon glyphicon-eye-open"></span>
                                 </Link>
                             }

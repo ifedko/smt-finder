@@ -96,6 +96,30 @@ export const loadHistory = (pageNumber = 1) => {
     };
 };
 
+export const loadResultDetails = (id) => {
+    return (dispatch, getState) => {
+        dispatch(setIsLoading(true));
+        dispatch(requestResultDetails());
+        const request = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        };
+        //@todo handle errors
+        return fetch(`${apiBaseUrl}/v1/requests/${id}`, request)
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                dispatch(receiveResultDetails(data));
+                dispatch(setIsLoading(false));
+            });
+    };
+};
+
 export const changePageOfHistoryDetailsList = (pageNumber) => {
     return {
         type: 'CHANGE_PAGE_OF_HISTORY_DETAILS_LIST',
@@ -125,10 +149,10 @@ const requestResultDetails = () => {
     };
 };
 
-const receiveResultDetails = (json) => {
+const receiveResultDetails = (data) => {
     return {
         type: 'RECEIVE_RESULT_DETAILS',
-        details: json.data
+        data
     };
 };
 
