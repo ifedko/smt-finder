@@ -14,7 +14,8 @@ class ResultList extends Component {
             })).isRequired,
             pagination: PropTypes.shape({
                 pageNumber: PropTypes.number.isRequired,
-                pagesCount: PropTypes.number.isRequired
+                pagesCount: PropTypes.number.isRequired,
+                itemsPerPage: PropTypes.number.isRequired
             }),
             handleChangePage: PropTypes.func
         };
@@ -26,7 +27,7 @@ class ResultList extends Component {
     }
 
     handlePageSelect(pageNumber) {
-        if (this.props.handleChangePage) {
+        if (this.props.handleChangePage && this.props.pagination.pageNumber !== pageNumber) {
             this.props.handleChangePage(pageNumber);
         }
     }
@@ -45,10 +46,11 @@ class ResultList extends Component {
         const rows = [];
         if (items) {
             items.forEach((item, index) => {
+                const itemKey = (index + 1) + pagination.itemsPerPage * (pagination.pageNumber - 1);
                 const text = (item.text) ? item.text : '';
                 rows.push(
-                    <tr key={index}>
-                        <td>{index + 1}</td>
+                    <tr key={itemKey}>
+                        <td>{itemKey}</td>
                         <td>{item.url}</td>
                         <td>{item.createdAt}</td>
                         <td>{this.getSearchTypeName(item.searchType, text)}</td>

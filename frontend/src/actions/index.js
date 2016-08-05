@@ -1,7 +1,7 @@
-import fetch from 'isomorphic-fetch'
+import fetch from 'isomorphic-fetch';
+import * as constants from '../constants';
 
-const apiBaseUrl = 'http://api.smt-finder.local';
-const itemsOnPage = 20;
+const apiBaseUrl = constants.apiBaseUrl;
 
 export const setIsLoading = (isLoading) => {
     return {
@@ -65,7 +65,7 @@ export const submitSearchForm = (data) => {
     }
 };
 
-export const loadHistory = () => {
+export const loadHistory = (pageNumber = 1) => {
     return (dispatch, getState) => {
         dispatch(setIsLoading(true));
         dispatch(requestHistory());
@@ -77,26 +77,23 @@ export const loadHistory = () => {
             },
         };
         //@todo handle errors
-        return fetch(`${apiBaseUrl}/v1/requests`, request)
+        return fetch(`${apiBaseUrl}/v1/requests?page=${pageNumber}&per-page=${constants.itemsPerPage}`, request)
             .then(response => {
-                // console.log(response.headers);
-                // console.log(response.headers.values());
-                // console.log(response.headers.get('X-Pagination-Current-Page'));
-                return response.json();
+                return {
+                    itemsPromise: response.json(),
+                    pagination: {
+                        pagesCount: Number(response.headers.get('X-Pagination-Page-Count')),
+                        pageNumber: Number(response.headers.get('X-Pagination-Current-Page'))
+                    }
+                };
             })
-            .then(items => {
-                console.log('items', items);
-                dispatch(receiveHistory(items));
-                dispatch(setIsLoading(false));
+            .then(data => {
+                data.itemsPromise.then(items => {
+                    dispatch(receiveHistory(items, data.pagination));
+                    dispatch(setIsLoading(false));
+                });
             });
     };
-};
-
-export const changePageOfHistoryList = (pageNumber) => {
-    return {
-        type: 'CHANGE_PAGE_OF_HISTORY_LIST',
-        pageNumber
-    }
 };
 
 export const changePageOfHistoryDetailsList = (pageNumber) => {
@@ -114,10 +111,11 @@ const requestHistory = () => {
     };
 };
 
-const receiveHistory = (json) => {
+const receiveHistory = (items, pagination) => {
     return {
         type: 'RECEIVE_HISTORY',
-        items: json
+        items,
+        pagination
     };
 };
 

@@ -25,7 +25,7 @@ class App extends Component {
                 >
                     <Route path="/" component={RootContainer}>
                         <IndexRoute component={HomeContainer} />
-                        <Route path="/history" component={HistoryContainer} />
+                        <Route path="/history(/page/:page)" component={HistoryContainer} />
                         <Route path="/search-details" component={SearchDetailsContainer} />
                     </Route>
                 </Router>

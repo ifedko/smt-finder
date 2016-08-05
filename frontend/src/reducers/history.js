@@ -2,29 +2,9 @@ import { combineReducers } from 'redux';
 
 const defaultState = {
     list: {
-        items: [
-            {
-                searchType: 'links',
-                url: 'e2e4online.ru',
-                createdAt: '16:20 16.06.2016',
-                resultsCount: 152
-            },
-            {
-                searchType: 'text',
-                url: 'e2e4online.ru',
-                createdAt: '16:20 16.06.2016',
-                resultsCount: 22,
-                searchValue: 'комплектующие'
-            },
-            {
-                searchType: 'images',
-                url: 'e2e4online.ru',
-                createdAt: '16:20 16.06.2016',
-                resultsCount: 78
-            }
-        ],
-        pageNumber: 3,
-        pagesCount: 5,
+        items: [],
+        pageNumber: 1,
+        pagesCount: 1,
         isFetching: false
     },
     details: {
@@ -51,10 +31,10 @@ const historyList = (state = defaultState.list, action) => {
         case 'RECEIVE_HISTORY':
             return Object.assign({}, state, {
                 isFetching: false,
-                items: action.items
+                items: action.items,
+                pageNumber: action.pagination.pageNumber,
+                pagesCount: action.pagination.pagesCount
             });
-        case 'CHANGE_PAGE_OF_HISTORY_LIST':
-            return Object.assign({}, state, { pageNumber: action.pageNumber });
         default:
             return state;
     }
@@ -73,7 +53,9 @@ const historyDetails = (state = defaultState.details, action) => {
                 url: action.url,
                 createdAt: action.createdAt,
                 resultsCount: action.resultsCount,
-                items: action.items
+                items: action.items,
+                itemsPageNumber: action.pagination.pageNumber,
+                itemsPagesCount: action.pagination.pagesCount
             });
         case 'SET_HISTORY_DETAILS':
             return Object.assign({}, state, {

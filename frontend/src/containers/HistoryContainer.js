@@ -1,11 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { setBackUrl, changePageOfHistoryList, loadHistory } from '../actions';
+import { push } from 'react-router-redux';
+import { setBackUrl, loadHistory } from '../actions';
+import * as constants from '../constants';
 import ResultList from '../components/ResultList';
 
 class HistoryContainer extends Component {
     static get propTypes() {
         return {
+            params: PropTypes.shape({
+                page: PropTypes.string
+            }),
             items: PropTypes.arrayOf(PropTypes.shape({
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
@@ -14,18 +19,30 @@ class HistoryContainer extends Component {
             })),
             pagination: PropTypes.shape({
                 pageNumber: PropTypes.number.isRequired,
-                pagesCount: PropTypes.number.isRequired
+                pagesCount: PropTypes.number.isRequired,
+                itemsPerPage: PropTypes.number.isRequired
             }).isRequired,
             isLoading: PropTypes.bool.isRequired,
-            setBackUrl: PropTypes.func.isRequired,
             handleChangePage: PropTypes.func.isRequired,
             init: PropTypes.func.isRequired
         };
     }
 
     componentWillMount() {
-        this.props.setBackUrl('/history');
-        this.props.init();
+        const pageNumber = (this.props.params.page && Number(this.props.params.page) > 0)
+            ? Number(this.props.params.page)
+            : 1;
+        this.props.init(pageNumber);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const pageNumber = (this.props.params.page && Number(this.props.params.page) > 0)
+            ? Number(this.props.params.page)
+            : 1;
+        const defaultPageNumber = 1;
+        if (!nextProps.params.page && pageNumber > defaultPageNumber) {
+            this.props.init(defaultPageNumber);
+        }
     }
 
     render() {
@@ -46,7 +63,8 @@ const mapStateToProps = (state) => {
         items: state.history.historyList.items,
         pagination: {
             pageNumber: state.history.historyList.pageNumber,
-            pagesCount: state.history.historyList.pagesCount
+            pagesCount: state.history.historyList.pagesCount,
+            itemsPerPage: constants.itemsPerPage
         },
         isLoading: state.application.isLoading
     };
@@ -54,14 +72,16 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setBackUrl: (backUrl) => {
-            dispatch(setBackUrl(backUrl));
-        },
         handleChangePage: (pageNumber) => {
-            dispatch(changePageOfHistoryList(pageNumber));
+            const backUrl = (pageNumber > 1) ? `/history/page/${pageNumber}` : '/history';
+            dispatch(setBackUrl(backUrl));
+            dispatch(push(`/history/page/${pageNumber}`));
+            dispatch(loadHistory(pageNumber));
         },
-        init: () => {
-            dispatch(loadHistory());
+        init: (pageNumber) => {
+            const backUrl = (pageNumber > 1) ? `/history/page/${pageNumber}` : '/history';
+            dispatch(setBackUrl(backUrl));
+            dispatch(loadHistory(pageNumber));
         }
     };
 };
