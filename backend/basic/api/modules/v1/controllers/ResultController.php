@@ -4,11 +4,12 @@ namespace app\api\modules\v1\controllers;
 
 use yii\rest\ActiveController;
 use yii\web\Response;
+use yii\data\ActiveDataProvider;
 
 //@todo remain only save, get list and get by id methods
-class RequestController extends ActiveController
+class ResultController extends ActiveController
 {
-    public $modelClass = 'app\api\modules\v1\models\Request';
+    public $modelClass = 'app\api\modules\v1\models\Result';
 
     /**
      * @inheritdoc
@@ -28,7 +29,7 @@ class RequestController extends ActiveController
             'class' => \yii\filters\Cors::className(),
             'cors' => [
                 'Origin' => ['*'],
-                'Access-Control-Request-Method' => ['GET', 'POST'],
+                'Access-Control-Request-Method' => ['GET'],
                 'Access-Control-Request-Headers' => ['accept', 'content-type'],
                 'Access-Control-Expose-Headers' => [
                     'X-Pagination-Total-Count',
@@ -41,5 +42,29 @@ class RequestController extends ActiveController
             ],
         ];
         return $behaviors;
+    }
+
+    public function actions()
+    {
+        return array_merge(
+            parent::actions(),
+            [
+                'index' => [
+                    'class' => 'yii\rest\IndexAction',
+                    'modelClass' => $this->modelClass,
+                    'checkAccess' => [$this, 'checkAccess'],
+                    'prepareDataProvider' => function ($action) {
+                        $modelClass = $this->modelClass;
+                        $requestId = \Yii::$app->request->get('request_id', 0);
+                        $query = ($requestId > 0)
+                            ? $modelClass::find()->where('request_id=:resultId', [':resultId' => $requestId])
+                            : $modelClass::find();
+                        return new ActiveDataProvider([
+                            'query' => $query
+                        ]);
+                    }
+                ]
+            ]
+        );
     }
 }

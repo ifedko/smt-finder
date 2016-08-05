@@ -41,7 +41,8 @@ return [
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
-                        'v1/request'
+                        'v1/request',
+                        'v1/result',
                     ]
                 ],
             ],
@@ -50,11 +51,7 @@ return [
     ],
     'modules' => [
         'v1' => [
-//            'basePath' => '@app/modules/v1',
-//            'class' => 'api\modules\v1\Module'
             'class' => 'app\api\modules\v1\Module',
-//            'basePath' => '@app/modules/v1',
-//            'controllerNamespace' => 'api\modules\v1\controllers'
         ]
     ],
     'params' => $params,

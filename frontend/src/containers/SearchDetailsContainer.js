@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { loadResultDetails, changePageOfHistoryDetailsList } from '../actions';
+import { loadResultDetails, loadResultItems, addPageOfSearchDetailsList } from '../actions';
+import * as constants from '../constants';
 import ResultItem from '../components/ResultItem';
 
 class SearchDetailsContainer extends Component {
@@ -11,24 +12,27 @@ class SearchDetailsContainer extends Component {
                 resultId: PropTypes.string
             }),
             backUrl: PropTypes.string.isRequired,
-            details: PropTypes.shape({
-                data: PropTypes.shape({
-                    id: PropTypes.string.isRequired,
-                    searchType: PropTypes.string.isRequired,
-                    url: PropTypes.string.isRequired,
-                    createdAt: PropTypes.string.isRequired,
-                    resultsCount: PropTypes.number.isRequired
-                }),
-                items: PropTypes.array.isRequired,
-                pagination: {
-                    pageNumber: PropTypes.number.isRequired,
-                    pagesCount: PropTypes.number.isRequired
-                }
+            data: PropTypes.shape({
+                id: PropTypes.number,
+                searchType: PropTypes.string,
+                url: PropTypes.string,
+                createdAt: PropTypes.string,
+                resultsCount: PropTypes.number
+            }),
+            items: PropTypes.array.isRequired,
+            pagination: PropTypes.shape({
+                pageNumber: PropTypes.number,
+                pagesCount: PropTypes.number
             }),
             isLoading: PropTypes.bool.isRequired,
             init: PropTypes.func.isRequired,
-            handleChangePage: PropTypes.func.isRequired
+            addPage: PropTypes.func.isRequired
         };
+    }
+
+    constructor(props) {
+        super(props);
+        this.handleChangePage = this.handleChangePage.bind(this);
     }
 
     componentWillMount() {
@@ -40,15 +44,21 @@ class SearchDetailsContainer extends Component {
         }
     }
 
+    handleChangePage(pageNumber) {
+        if (this.props.data.id) {
+            this.props.addPage(this.props.data.id, pageNumber);
+        }
+    }
+
     render() {
-        const { details, handleChangePage, isLoading, backUrl } = this.props;
+        const { data, items, pagination, isLoading, backUrl } = this.props;
         return (
             <div>
                 <Link to={backUrl}>
                     <span className="glyphicon glyphicon-menu-left"></span> Назад
                 </Link>
-                {!isLoading && details &&
-                    <ResultItem details={details} handleChangePage={handleChangePage}/>
+                {!isLoading && data.id &&
+                    <ResultItem data={data} items={items} pagination={pagination} handleChangePage={this.handleChangePage}/>
                 }
             </div>
         );
@@ -58,18 +68,25 @@ class SearchDetailsContainer extends Component {
 const mapStateToProps = (state) => {
     return {
         backUrl: state.application.backUrl,
-        details: state.history.historyDetails,
+        data: state.history.historyDetails.data,
+        items: state.history.historyDetails.items,
+        pagination: {
+            pageNumber: state.history.historyDetails.pagination.pageNumber,
+            pagesCount: state.history.historyDetails.pagination.pagesCount,
+            itemsPerPage: constants.resultItemsPerPage
+        },
         isLoading: state.application.isLoading
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        init: (resultId) => {
-            dispatch(loadResultDetails(resultId));
+        init: (resultId, pageNumber) => {
+            dispatch(loadResultDetails(resultId))
+                .then(() => dispatch(loadResultItems(resultId, pageNumber)));
         },
-        handleChangePage: (pageNumber) => {
-            dispatch(changePageOfHistoryDetailsList(pageNumber));
+        addPage: (resultId, pageNumber) => {
+            dispatch(loadResultItems(resultId, pageNumber, true));
         }
     };
 };

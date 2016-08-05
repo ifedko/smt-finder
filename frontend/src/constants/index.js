@@ -1,2 +1,3 @@
 export const apiBaseUrl = 'http://api.smt-finder.local';
-export const itemsPerPage = 10;
+export const historyItemsPerPage = 10;
+export const resultItemsPerPage = 20;

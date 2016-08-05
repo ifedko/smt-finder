@@ -20,7 +20,7 @@ class App extends Component {
         return (
             <div>
                 <Router
-                    onUpdate={() => window.scrollTo(0, 0)}
+                    //onEnter={() => window.scrollTo(0, 0)}
                     history={history}
                 >
                     <Route path="/" component={RootContainer}>

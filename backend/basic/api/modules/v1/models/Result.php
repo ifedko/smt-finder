@@ -28,7 +28,7 @@ class Result extends ActiveRecord
     public function rules()
     {
         return [
-            [['url', 'searchType', 'createdAt', 'resultsCount'], 'required']
+            [['request_id', 'value'], 'required']
         ];
     }
 }

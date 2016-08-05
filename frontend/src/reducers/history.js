@@ -3,15 +3,19 @@ import { combineReducers } from 'redux';
 const defaultState = {
     list: {
         items: [],
-        pageNumber: 1,
-        pagesCount: 1,
+        pagination: {
+            pageNumber: 1,
+            pagesCount: 1
+        },
         isFetching: false
     },
     details: {
         data: {},
         items: [],
-        pageNumber: 1,
-        pagesCount: 1,
+        pagination: {
+            pageNumber: 1,
+            pagesCount: 1
+        },
         isFetching: false
     }
 };
@@ -26,8 +30,7 @@ const historyList = (state = defaultState.list, action) => {
             return Object.assign({}, state, {
                 isFetching: false,
                 items: action.items,
-                pageNumber: action.pagination.pageNumber,
-                pagesCount: action.pagination.pagesCount
+                pagination: action.pagination
             });
         default:
             return state;
@@ -56,21 +59,20 @@ const historyDetails = (state = defaultState.details, action) => {
                 isFetching: true
             });
         case 'RECEIVE_RESULT_DETAILS':
-            console.log('RECEIVE_RESULT_DETAILS', action);
             return Object.assign({}, state, {
                 data: historyDetailsData(state.data, action),
-                isFetching: false,
+                isFetching: false
             });
-        case 'SET_HISTORY_DETAILS':
+        case 'REQUEST_RESULT_ITEMS':
             return Object.assign({}, state, {
-                searchType: action.details.searchType,
-                url: action.details.url,
-                createdAt: action.details.createdAt,
-                resultsCount: action.details.resultsCount,
-                items: action.details.items
+                isFetching: true
             });
-        case 'CHANGE_PAGE_OF_HISTORY_DETAILS_LIST':
-            return Object.assign({}, state, { itemsPageNumber: action.pageNumber });
+        case 'RECEIVE_RESULT_ITEMS':
+            return Object.assign({}, state, {
+                items: (action.appendItems) ? [...state.items, ...action.items] : action.items,
+                pagination: action.pagination,
+                isFetching: false
+            });
         default:
             return state;
     }

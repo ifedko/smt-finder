@@ -6,7 +6,7 @@ class ResultList extends Component {
     static get propTypes() {
         return {
             items: PropTypes.arrayOf(PropTypes.shape({
-                id: PropTypes.string.isRequired,
+                id: PropTypes.number.isRequired,
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
                 createdAt: PropTypes.string.isRequired,

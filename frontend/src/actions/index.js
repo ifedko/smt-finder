@@ -77,7 +77,7 @@ export const loadHistory = (pageNumber = 1) => {
             },
         };
         //@todo handle errors
-        return fetch(`${apiBaseUrl}/v1/requests?page=${pageNumber}&per-page=${constants.itemsPerPage}`, request)
+        return fetch(`${apiBaseUrl}/v1/requests?page=${pageNumber}&per-page=${constants.historyItemsPerPage}`, request)
             .then(response => {
                 return {
                     itemsPromise: response.json(),
@@ -113,18 +113,47 @@ export const loadResultDetails = (id) => {
                 return response.json();
             })
             .then(data => {
-                console.log(data);
                 dispatch(receiveResultDetails(data));
                 dispatch(setIsLoading(false));
             });
     };
 };
 
-export const changePageOfHistoryDetailsList = (pageNumber) => {
-    return {
-        type: 'CHANGE_PAGE_OF_HISTORY_DETAILS_LIST',
-        pageNumber
-    }
+export const loadResultItems = (resultId, pageNumber = 1, appendItems = false) => {
+    return (dispatch, getState) => {
+        //dispatch(setIsLoading(true));
+        dispatch(requestResultItems());
+        const request = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        };
+        //@todo handle errors
+        return fetch(`${apiBaseUrl}/v1/results?request_id=${resultId}&page=${pageNumber}&per-page=${constants.resultItemsPerPage}`, request)
+            .then(response => {
+                const pagesCount = (Number(response.headers.get('X-Pagination-Page-Count')) > 0)
+                    ? Number(response.headers.get('X-Pagination-Page-Count'))
+                    : 1;
+                const pageNumber = (Number(response.headers.get('X-Pagination-Current-Page')) > 0)
+                    ? Number(response.headers.get('X-Pagination-Current-Page'))
+                    : 1;
+                return {
+                    itemsPromise: response.json(),
+                    pagination: {
+                        pagesCount,
+                        pageNumber
+                    }
+                };
+            })
+            .then(data => {
+                data.itemsPromise.then(items => {
+                    dispatch(receiveResultItems(items, data.pagination, appendItems));
+                    //dispatch(setIsLoading(false));
+                });
+            });
+    };
 };
 
 /* API ACTIONS */
@@ -153,6 +182,21 @@ const receiveResultDetails = (data) => {
     return {
         type: 'RECEIVE_RESULT_DETAILS',
         data
+    };
+};
+
+const requestResultItems = () => {
+    return {
+        type: 'REQUEST_RESULT_ITEMS'
+    };
+};
+
+const receiveResultItems = (items, pagination, appendItems) => {
+    return {
+        type: 'RECEIVE_RESULT_ITEMS',
+        items,
+        pagination,
+        appendItems
     };
 };
 

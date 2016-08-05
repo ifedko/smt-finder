@@ -12,6 +12,7 @@ class HistoryContainer extends Component {
                 page: PropTypes.string
             }),
             items: PropTypes.arrayOf(PropTypes.shape({
+                id: PropTypes.number.isRequired,
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
                 createdAt: PropTypes.string.isRequired,
@@ -62,9 +63,9 @@ const mapStateToProps = (state) => {
     return {
         items: state.history.historyList.items,
         pagination: {
-            pageNumber: state.history.historyList.pageNumber,
-            pagesCount: state.history.historyList.pagesCount,
-            itemsPerPage: constants.itemsPerPage
+            pageNumber: state.history.historyList.pagination.pageNumber,
+            pagesCount: state.history.historyList.pagination.pagesCount,
+            itemsPerPage: constants.historyItemsPerPage
         },
         isLoading: state.application.isLoading
     };
