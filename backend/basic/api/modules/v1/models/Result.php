@@ -31,4 +31,9 @@ class Result extends ActiveRecord
             [['request_id', 'value'], 'required']
         ];
     }
+
+    public function getRequest()
+    {
+        return $this->hasOne(Request::className(), ['id' => 'request_id']);
+    }
 }

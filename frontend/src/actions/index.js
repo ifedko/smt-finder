@@ -2,6 +2,7 @@ import fetch from 'isomorphic-fetch';
 import * as constants from '../constants';
 
 const apiBaseUrl = constants.apiBaseUrl;
+const errorMessage = constants.errorUserMessage;
 
 export const setIsLoading = (isLoading) => {
     return {
@@ -14,6 +15,13 @@ export const setBackUrl = (backUrl) => {
     return {
         type: 'SET_BACK_URL',
         backUrl
+    }
+};
+
+export const setError = (error) => {
+    return {
+        type: 'SET_ERROR',
+        error
     }
 };
 
@@ -38,30 +46,35 @@ export const changeSearchText = (searchText) => {
     }
 };
 
-const setResult = (result) => {
-    return {
-        type: 'SET_SEARCH_RESULT',
-        result
-    }
-};
-
-export const submitSearchForm = (data) => {
+export const search = (data) => {
     return (dispatch, getState) => {
-        console.log('SUBMITTING DATA');
         dispatch(setIsLoading(true));
-        dispatch(search(data.url, data.searchType, data.text));
-        // @todo load result by data
-        const searchResult = {
-            searchType: data.searchType,
-            url: data.url,
-            date: '2016',
-            text: data.text,
-            foundCount: 100
+        dispatch(requestSearch());
+        const request = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: JSON.stringify(data)
         };
-        dispatch(setResult(searchResult));
-        setTimeout(() => {
-            dispatch(setIsLoading(false));
-        }, 2000);
+        return fetch(`${apiBaseUrl}/v1/requests/search`, request)
+            .then(response => {
+                return response.json();
+            })
+            .then(result => {
+                if (result.status === false) {
+                    const errorResultMessage = (result.error) ? result.error : 'Неизвестная ошибка';
+                    dispatch(setError(errorResultMessage));
+                } else {
+                    dispatch(receiveSearchResult(result));
+                }
+                dispatch(setIsLoading(false));
+            })
+            .catch(error => {
+                dispatch(setError(errorMessage));
+                dispatch(setIsLoading(false));
+            });
     }
 };
 
@@ -73,11 +86,10 @@ export const loadHistory = (pageNumber = 1) => {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
         };
-        //@todo handle errors
-        return fetch(`${apiBaseUrl}/v1/requests?page=${pageNumber}&per-page=${constants.historyItemsPerPage}`, request)
+        return fetch(`${apiBaseUrl}/v1/requests?page=${pageNumber}&per-page=${constants.historyItemsPerPage}&sort=-createdAt`, request)
             .then(response => {
                 return {
                     itemsPromise: response.json(),
@@ -92,7 +104,11 @@ export const loadHistory = (pageNumber = 1) => {
                     dispatch(receiveHistory(items, data.pagination));
                     dispatch(setIsLoading(false));
                 });
-            });
+            })
+            .catch(error => {
+                dispatch(setError(errorMessage));
+                dispatch(setIsLoading(false));
+            });;
     };
 };
 
@@ -104,10 +120,9 @@ export const loadResultDetails = (id) => {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
         };
-        //@todo handle errors
         return fetch(`${apiBaseUrl}/v1/requests/${id}`, request)
             .then(response => {
                 return response.json();
@@ -115,13 +130,16 @@ export const loadResultDetails = (id) => {
             .then(data => {
                 dispatch(receiveResultDetails(data));
                 dispatch(setIsLoading(false));
+            })
+            .catch(error => {
+                dispatch(setError(errorMessage));
+                dispatch(setIsLoading(false));
             });
     };
 };
 
 export const loadResultItems = (resultId, pageNumber = 1, appendItems = false) => {
     return (dispatch, getState) => {
-        //dispatch(setIsLoading(true));
         dispatch(requestResultItems());
         const request = {
             method: 'GET',
@@ -130,7 +148,6 @@ export const loadResultItems = (resultId, pageNumber = 1, appendItems = false) =
                 'Content-Type': 'application/json'
             },
         };
-        //@todo handle errors
         return fetch(`${apiBaseUrl}/v1/results?request_id=${resultId}&page=${pageNumber}&per-page=${constants.resultItemsPerPage}`, request)
             .then(response => {
                 const pagesCount = (Number(response.headers.get('X-Pagination-Page-Count')) > 0)
@@ -150,8 +167,11 @@ export const loadResultItems = (resultId, pageNumber = 1, appendItems = false) =
             .then(data => {
                 data.itemsPromise.then(items => {
                     dispatch(receiveResultItems(items, data.pagination, appendItems));
-                    //dispatch(setIsLoading(false));
                 });
+            })
+            .catch(error => {
+                dispatch(setError(errorMessage));
+                dispatch(setIsLoading(false));
             });
     };
 };
@@ -206,9 +226,9 @@ const requestSearch = () => {
     };
 };
 
-const receiveSearchResult = (json) => {
+const receiveSearchResult = (data) => {
     return {
         type: 'RECEIVE_SEARCH_RESULT',
-        details: json.data
+        result: data
     };
 };

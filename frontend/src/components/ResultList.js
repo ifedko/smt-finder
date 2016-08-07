@@ -47,7 +47,9 @@ class ResultList extends Component {
         const rows = [];
         if (items) {
             items.forEach((item, index) => {
-                const itemKey = (index + 1) + pagination.itemsPerPage * (pagination.pageNumber - 1);
+                const itemKey = (pagination)
+                    ? (index + 1) + pagination.itemsPerPage * (pagination.pageNumber - 1)
+                    : (index + 1);
                 const text = (item.text) ? item.text : '';
                 rows.push(
                     <tr key={itemKey}>

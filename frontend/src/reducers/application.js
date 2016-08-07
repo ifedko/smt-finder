@@ -2,7 +2,8 @@ import { combineReducers } from 'redux';
 
 const defaultState = {
     isLoading: false,
-    backUrl: ''
+    backUrl: '',
+    error: ''
 };
 
 const application = (state = defaultState, action) => {
@@ -11,6 +12,8 @@ const application = (state = defaultState, action) => {
             return Object.assign({}, state, { isLoading: action.isLoading });
         case 'SET_BACK_URL':
             return Object.assign({}, state, { backUrl: action.backUrl });
+        case 'SET_ERROR':
+            return Object.assign({}, state, { error: action.error });
         default:
             return state;
     }

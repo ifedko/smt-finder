@@ -42,4 +42,18 @@ class RequestController extends ActiveController
         ];
         return $behaviors;
     }
+
+    public function actions()
+    {
+        return array_merge(
+            parent::actions(),
+            [
+                'search' => [
+                    'class' => 'app\api\modules\v1\controllers\SearchAction',
+                    'modelClass' => $this->modelClass,
+                    'checkAccess' => [$this, 'checkAccess']
+                ]
+            ]
+        );
+    }
 }

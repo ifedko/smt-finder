@@ -3,15 +3,10 @@
 $db     = require(__DIR__ . '/../../config/db.php');
 $params = require(__DIR__ . '/params.php');
 
-//$params = array_merge(
-//    require(__DIR__ . '/../../config/params.php'),
-//    require(__DIR__ . '/params.php')
-//);
-
 return [
     'id' => 'api',
     'basePath' => dirname(__DIR__) . '/..',
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'smtFinder'],
     'components' => [
         'user' => [
             'identityClass' => 'app\models\User',
@@ -23,13 +18,28 @@ return [
                 'application/json' => 'yii\web\JsonParser',
             ]
         ],
+        'response' => [
+            'class' => 'yii\web\Response',
+            'on beforeSend' => function ($event) {
+                $response = $event->sender;
+                $responseData = $response->data;
+                if ($responseData !== null && !empty($responseData['code']) && $responseData['code'] === 422) {
+                    $response->data = [
+                        'status' => $response->isSuccessful,
+                        'error' => $responseData['message'],
+                        'code' => $responseData['code']
+                    ];
+                    $response->statusCode = 200;
+                }
+            },
+        ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
-                    'logFile' => '@app/runtime/logs/api.log',
+                    'levels' => ['error', 'warning', 'info'],
+                    'logFile' => '@app/api/runtime/logs/api.log',
                 ],
             ],
         ],
@@ -42,12 +52,23 @@ return [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => [
                         'v1/request',
+                    ],
+                    'extraPatterns' => [
+                        'POST search' => 'search'
+                    ]
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => [
                         'v1/result',
                     ]
                 ],
             ],
         ],
         'db' => $db,
+        'smtFinder' => [
+            'class' => 'app\api\components\SmtFinder'
+        ]
     ],
     'modules' => [
         'v1' => [
