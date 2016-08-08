@@ -45,11 +45,15 @@ class SearchAction extends Action
         $data = json_decode($requestBody, true);
         $data['createdAt'] = (new \DateTime('now'))->format('Y-m-d H:i:s');
 
-        /* @var SmtFinderService $smtFinderService */
-        $smtFinderService = \Yii::$app->smtFinder;
-        $result = $smtFinderService->run($data['searchType'], $data['url'], $data);
-        $data['resultsCount'] = $result['count'];
-        $results = $result['items'];
+        try {
+            /* @var SmtFinderService $smtFinderService */
+            $smtFinderService = \Yii::$app->smtFinder;
+            $result = $smtFinderService->run($data['searchType'], $data['url'], $data);
+            $data['resultsCount'] = $result['count'];
+            $results = $result['items'];
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage(), 422);
+        }
 
         /* @var $model \yii\db\ActiveRecord */
         $model = new $this->modelClass([
