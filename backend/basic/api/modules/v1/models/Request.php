@@ -28,7 +28,8 @@ class Request extends ActiveRecord
     public function rules()
     {
         return [
-            [['url', 'searchType', 'text', 'createdAt', 'resultsCount'], 'required']
+            [['url', 'searchType', 'createdAt', 'resultsCount'], 'required'],
+            [['text'], 'string']
         ];
     }
 

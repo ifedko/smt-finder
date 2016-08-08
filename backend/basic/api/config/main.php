@@ -67,7 +67,7 @@ return [
         ],
         'db' => $db,
         'smtFinder' => [
-            'class' => 'app\api\components\SmtFinder'
+            'class' => 'app\api\components\smt_finder\SmtFinderService'
         ]
     ],
     'modules' => [

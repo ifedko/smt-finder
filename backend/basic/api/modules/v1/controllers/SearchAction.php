@@ -8,6 +8,7 @@ use yii\base\Model;
 use yii\helpers\Url;
 use yii\rest\Action;
 use yii\web\ServerErrorHttpException;
+use app\api\components\smt_finder\SmtFinderService;
 
 /**
  * @inheritdoc
@@ -39,17 +40,16 @@ class SearchAction extends Action
         if (empty($requestBody)) {
             throw new \Exception('Empty request', 422);
         }
+        // @todo add data validation
 
         $data = json_decode($requestBody, true);
-//        Yii::info(sprintf('SmtFinder - get request with data: %s', var_export($data, true)));
         $data['createdAt'] = (new \DateTime('now'))->format('Y-m-d H:i:s');
 
-        $results = [
-            'http://beautiful-images.org/wp-content/uploads/2016/04/Sea-images-51Pics-2.jpg',
-            'http://media.indiatimes.in/media/content/2016/Apr/vs88b943auuf6insi6f6_1461156185.jpg',
-            'http://www.australiascoralcoast.com/sfimages/default-source/australian-sea-lion-encounters/jurien-bay-australian-sea-lion.jpg',
-        ];
-        $data['resultsCount'] = count($results);
+        /* @var SmtFinderService $smtFinderService */
+        $smtFinderService = \Yii::$app->smtFinder;
+        $result = $smtFinderService->run($data['searchType'], $data['url'], $data);
+        $data['resultsCount'] = $result['count'];
+        $results = $result['items'];
 
         /* @var $model \yii\db\ActiveRecord */
         $model = new $this->modelClass([

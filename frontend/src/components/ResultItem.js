@@ -81,12 +81,14 @@ class ResultItem extends Component {
             }
             if (data.searchType === 'links') {
                 items.forEach((item, index) => {
-                    const itemKey = (index + 1) + pagination.itemsPerPage * (pagination.pageNumber - 1);
+                    const itemKey = (index + 1);
                     rows.push(
                         <tr key={index}>
                             <td>{itemKey}</td>
                             <td>
-                                {item.value}
+                                <a href={item.value} target="_blank">
+                                    {item.value}
+                                </a>
                             </td>
                         </tr>
                     );
@@ -97,7 +99,7 @@ class ResultItem extends Component {
         return (
             <div>
                 <h3>
-                    Результат поиска {this.getLabel(data.searchType, 'header')} на сайте {data.url} {data.createdAt}
+                    Результат поиска {this.getLabel(data.searchType, 'header')} на сайте <i>{data.url}</i> ({data.createdAt})
                 </h3>
                 {rows.length === 0 &&
                     <Alert bsStyle="info">
@@ -118,7 +120,9 @@ class ResultItem extends Component {
                     </Table>
                 }
                 {(rows.length > 0 && pagination.pagesCount > 1 && (pagination.pageNumber < pagination.pagesCount)) &&
-                    <Button bsStyle="info" onClick={(event) => this.handleSelectPage(pagination.pageNumber + 1)}>Загрузить еще</Button>
+                    <div>
+                        <Button bsStyle="info" onClick={(event) => this.handleSelectPage(pagination.pageNumber + 1)}>Загрузить еще</Button>
+                    </div>
                 }
             </div>
         );
