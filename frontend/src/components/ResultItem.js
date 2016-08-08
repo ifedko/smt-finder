@@ -120,7 +120,7 @@ class ResultItem extends Component {
                     </Table>
                 }
                 {(rows.length > 0 && pagination.pagesCount > 1 && (pagination.pageNumber < pagination.pagesCount)) &&
-                    <div>
+                    <div className="load-more-wrapper">
                         <Button bsStyle="info" onClick={(event) => this.handleSelectPage(pagination.pageNumber + 1)}>Загрузить еще</Button>
                     </div>
                 }

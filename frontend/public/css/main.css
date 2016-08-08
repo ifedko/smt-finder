@@ -13,3 +13,6 @@
     display: flex;
     margin: 0 auto;
 }
+.load-more-wrapper {
+    margin: 10px 0 40px;
+}
