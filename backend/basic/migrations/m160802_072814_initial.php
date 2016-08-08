@@ -17,10 +17,11 @@ class m160802_072814_initial extends Migration
 
         $this->createTable('search_result', [
             'id' => $this->primaryKey(),
-            'requestId' => $this->integer()->notNull(),
+            'request_id' => $this->integer()->notNull(),
             'value' => $this->string('1000')->notNull()
         ]);
-        $this->addForeignKey('search_result_fk', 'search_result', 'requestId', 'search_request', 'id', 'RESTRICT', 'RESTRICT');
+        $this->createIndex('request_idx', 'search_result', ['request_id']);
+        $this->addForeignKey('search_result_fk', 'search_result', 'request_id', 'search_request', 'id', 'RESTRICT', 'RESTRICT');
     }
 
     public function down()

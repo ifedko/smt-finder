@@ -1,17 +1,22 @@
 import React, { Component, PropTypes } from 'react';
-import { Table, Pagination, Alert } from 'react-bootstrap';
+import { Table, Button, Alert } from 'react-bootstrap';
 
 class ResultItem extends Component {
     static get propTypes() {
         return {
-            details: PropTypes.shape({
+            data: PropTypes.shape({
+                id: PropTypes.number.isRequired,
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
-                items: PropTypes.array.isRequired,
-                itemsPageNumber: PropTypes.number.isRequired,
-                itemsPagesCount: PropTypes.number.isRequired,
+                createdAt: PropTypes.string.isRequired,
+                resultsCount: PropTypes.number.isRequired
             }).isRequired,
+            items: PropTypes.array,
+            pagination: PropTypes.shape({
+                pageNumber: PropTypes.number.isRequired,
+                pagesCount: PropTypes.number.isRequired,
+                itemsPerPage: PropTypes.number.isRequired
+            }),
             handleChangePage: PropTypes.func.isRequired
         };
     }
@@ -44,40 +49,69 @@ class ResultItem extends Component {
     }
 
     render() {
-        const { details: { searchType, url, date, items, itemsPageNumber, itemsPagesCount }} = this.props;
+        const { data, items, pagination } = this.props;
         const rows = [];
-        items.forEach((value, index) => {
-            rows.push(
-                <tr key={index}>
-                    <td>{index}</td>
-                    <td>
-                        {searchType === 'images' &&
-                            <img className="img-thumbnail" width="200px" src={value} />
+        if (items) {
+            if (data.searchType === 'images') {
+                const countCellsInRow = 5;
+                const rowsNumber = Math.ceil(items.length / countCellsInRow);
+                for (let rowNumber = 0; rowNumber < rowsNumber; rowNumber++) {
+                    const rowCells = [];
+                    for (let cellNumber = 0; cellNumber < countCellsInRow; cellNumber++) {
+                        const itemNumber = cellNumber + countCellsInRow * rowNumber;
+                        if (!items[itemNumber]) {
+                            break;
                         }
-                        {(searchType === 'text' || searchType === 'links') &&
-                            {value}
-                        }
-                    </td>
-                </tr>
-            );
-        });
+
+                        rowCells.push(
+                            <td key={itemNumber} colSpan={2}>
+                                <a href={items[itemNumber].value} target="_blank">
+                                    <img className="img-thumbnail" width="200px" src={items[itemNumber].value}/>
+                                </a>
+                            </td>
+                        );
+                    }
+
+                    rows.push(
+                        <tr key={rowNumber}>
+                            {rowCells}
+                        </tr>
+                    );
+                }
+            }
+            if (data.searchType === 'links') {
+                items.forEach((item, index) => {
+                    const itemKey = (index + 1);
+                    rows.push(
+                        <tr key={index}>
+                            <td>{itemKey}</td>
+                            <td>
+                                <a href={item.value} target="_blank">
+                                    {item.value}
+                                </a>
+                            </td>
+                        </tr>
+                    );
+                });
+            }
+        }
 
         return (
             <div>
                 <h3>
-                    Результат поиска {this.getLabel(searchType, 'header')} на сайте {url} {date}
+                    Результат поиска {this.getLabel(data.searchType, 'header')} на сайте <i>{data.url}</i> ({data.createdAt})
                 </h3>
-                {items.length === 0 &&
+                {rows.length === 0 &&
                     <Alert bsStyle="info">
                         Ничего не найдено :(
                     </Alert>
                 }
-                {items.length > 0 &&
+                {rows.length > 0 &&
                     <Table striped hover>
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>{this.getLabel(searchType, 'table')}</th>
+                                <th>{this.getLabel(data.searchType, 'table')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -85,19 +119,10 @@ class ResultItem extends Component {
                         </tbody>
                     </Table>
                 }
-                {(items.length > 0 && itemsPagesCount > 1) &&
-                    <Pagination
-                        prev
-                        next
-                        first
-                        last
-                        ellipsis
-                        boundaryLinks
-                        items={itemsPagesCount}
-                        maxButtons={5}
-                        activePage={itemsPageNumber}
-                        onSelect={this.handleSelectPage}
-                    />
+                {(rows.length > 0 && pagination.pagesCount > 1 && (pagination.pageNumber < pagination.pagesCount)) &&
+                    <div>
+                        <Button bsStyle="info" onClick={(event) => this.handleSelectPage(pagination.pageNumber + 1)}>Загрузить еще</Button>
+                    </div>
                 }
             </div>
         );

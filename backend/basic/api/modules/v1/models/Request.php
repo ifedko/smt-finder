@@ -28,7 +28,13 @@ class Request extends ActiveRecord
     public function rules()
     {
         return [
-            [['url', 'searchType', 'createdAt', 'resultsCount'], 'required']
+            [['url', 'searchType', 'createdAt', 'resultsCount'], 'required'],
+            [['text'], 'string']
         ];
+    }
+
+    public function getResults()
+    {
+        return $this->hasMany(Result::className(), ['request_id' => 'id']);
     }
 }

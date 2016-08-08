@@ -5,6 +5,7 @@ import { hashHistory, browserHistory } from 'react-router';
 import { routerMiddleware, syncHistoryWithStore } from 'react-router-redux';
 import { createStore, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
+import { apiMiddleware } from 'redux-api-middleware';
 import rootReducer from './src/reducers';
 import App from './src/containers/App';
 import DevTools from './src/containers/DevTools';
@@ -33,7 +34,8 @@ if (process.env.NODE_ENV === 'development') {
 // Middlewares for Store
 const middleware = [
     thunk,
-    routerMiddleware(history)
+    routerMiddleware(history),
+    apiMiddleware
 ];
 
 // How to create store

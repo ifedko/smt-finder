@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link, Router } from 'react-router';
 import { push } from 'react-router-redux';
-import { Grid, Row, Col, Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Grid, Row, Col, Navbar, Nav, NavItem, Alert } from 'react-bootstrap';
 
 class RootContainer extends Component {
     constructor(props) {
@@ -11,13 +11,16 @@ class RootContainer extends Component {
 
     static get propTypes() {
         return {
-            isLoading: PropTypes.bool.isRequired,
+            application: PropTypes.shape({
+                isLoading: PropTypes.bool.isRequired,
+                error: PropTypes.string
+            }),
             routerPushPath: PropTypes.func.isRequired
         };
     }
 
     render() {
-        const { isLoading, routerPushPath } = this.props;
+        const { application: { isLoading, error }, routerPushPath } = this.props;
         return (
             <div>
                 <Grid>
@@ -55,6 +58,13 @@ class RootContainer extends Component {
                         </Col>
                     </Row>
                     <Row>
+                        {!isLoading && error &&
+                            <Col md={12}>
+                                <Alert bsStyle="danger">
+                                    <h6>{error}</h6>
+                                </Alert>
+                            </Col>
+                        }
                         <Col md={12}>
                             {this.props.children}
                         </Col>
@@ -74,7 +84,7 @@ class RootContainer extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        isLoading: state.application.isLoading
+        application: state.application
     };
 };
 

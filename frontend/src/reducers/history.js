@@ -2,47 +2,51 @@ import { combineReducers } from 'redux';
 
 const defaultState = {
     list: {
-        items: [
-            {
-                searchType: 'links',
-                url: 'e2e4online.ru',
-                date: '16:20 16.06.2016',
-                foundCount: 152
-            },
-            {
-                searchType: 'text',
-                url: 'e2e4online.ru',
-                date: '16:20 16.06.2016',
-                foundCount: 22,
-                searchValue: 'комплектующие'
-            },
-            {
-                searchType: 'images',
-                url: 'e2e4online.ru',
-                date: '16:20 16.06.2016',
-                foundCount: 78
-            }
-        ],
-        pageNumber: 3,
-        pagesCount: 5
+        items: [],
+        pagination: {
+            pageNumber: 1,
+            pagesCount: 1
+        },
+        isFetching: false
     },
     details: {
-        searchType: 'images',
-        url: 'e2e4online.ru',
-        date: '16:20 16.06.2016',
-        items: [
-            "http://static1.squarespace.com/static/53323bb4e4b0cebc6a28ffa2/53573350e4b0758dd79db484/53d7ed16e4b042d1ea99f850/1406732832301/?format=1000w",
-            "http://images2.fanpop.com/images/photos/4800000/kate-evangeline-lilly-4806637-1400-1050.jpg"
-        ],
-        itemsPageNumber: 2,
-        itemsPagesCount: 5
+        data: {},
+        items: [],
+        pagination: {
+            pageNumber: 1,
+            pagesCount: 1
+        },
+        isFetching: false
     }
 };
 
 const historyList = (state = defaultState.list, action) => {
     switch (action.type) {
-        case 'CHANGE_PAGE_OF_HISTORY_LIST':
-            return Object.assign({}, state, { pageNumber: action.pageNumber });
+        case 'REQUEST_HISTORY':
+            return Object.assign({}, state, {
+                isFetching: true
+            });
+        case 'RECEIVE_HISTORY':
+            return Object.assign({}, state, {
+                isFetching: false,
+                items: action.items,
+                pagination: action.pagination
+            });
+        default:
+            return state;
+    }
+};
+
+const historyDetailsData = (state = defaultState.details.data, action) => {
+    switch (action.type) {
+        case 'RECEIVE_RESULT_DETAILS':
+            return Object.assign({}, state, {
+                id: action.data.id,
+                url: action.data.url,
+                searchType: action.data.searchType,
+                resultsCount: action.data.resultsCount,
+                createdAt: action.data.createdAt
+            });
         default:
             return state;
     }
@@ -50,8 +54,25 @@ const historyList = (state = defaultState.list, action) => {
 
 const historyDetails = (state = defaultState.details, action) => {
     switch (action.type) {
-        case 'CHANGE_PAGE_OF_HISTORY_DETAILS_LIST':
-            return Object.assign({}, state, { itemsPageNumber: action.pageNumber });
+        case 'REQUEST_RESULT_DETAILS':
+            return Object.assign({}, state, {
+                isFetching: true
+            });
+        case 'RECEIVE_RESULT_DETAILS':
+            return Object.assign({}, state, {
+                data: historyDetailsData(state.data, action),
+                isFetching: false
+            });
+        case 'REQUEST_RESULT_ITEMS':
+            return Object.assign({}, state, {
+                isFetching: true
+            });
+        case 'RECEIVE_RESULT_ITEMS':
+            return Object.assign({}, state, {
+                items: (action.appendItems) ? [...state.items, ...action.items] : action.items,
+                pagination: action.pagination,
+                isFetching: false
+            });
         default:
             return state;
     }

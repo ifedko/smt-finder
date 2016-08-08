@@ -6,15 +6,17 @@ class ResultList extends Component {
     static get propTypes() {
         return {
             items: PropTypes.arrayOf(PropTypes.shape({
+                id: PropTypes.number.isRequired,
                 searchType: PropTypes.string.isRequired,
                 url: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
-                foundCount: PropTypes.number.isRequired,
+                createdAt: PropTypes.string.isRequired,
+                resultsCount: PropTypes.number.isRequired,
                 text: PropTypes.string
             })).isRequired,
             pagination: PropTypes.shape({
                 pageNumber: PropTypes.number.isRequired,
-                pagesCount: PropTypes.number.isRequired
+                pagesCount: PropTypes.number.isRequired,
+                itemsPerPage: PropTypes.number.isRequired
             }),
             handleChangePage: PropTypes.func
         };
@@ -26,7 +28,7 @@ class ResultList extends Component {
     }
 
     handlePageSelect(pageNumber) {
-        if (this.props.handleChangePage) {
+        if (this.props.handleChangePage && this.props.pagination.pageNumber !== pageNumber) {
             this.props.handleChangePage(pageNumber);
         }
     }
@@ -45,17 +47,20 @@ class ResultList extends Component {
         const rows = [];
         if (items) {
             items.forEach((item, index) => {
+                const itemKey = (pagination)
+                    ? (index + 1) + pagination.itemsPerPage * (pagination.pageNumber - 1)
+                    : (index + 1);
                 const text = (item.text) ? item.text : '';
                 rows.push(
-                    <tr key={index}>
-                        <td>{index + 1}</td>
+                    <tr key={itemKey}>
+                        <td>{itemKey}</td>
                         <td>{item.url}</td>
-                        <td>{item.date}</td>
+                        <td>{item.createdAt}</td>
                         <td>{this.getSearchTypeName(item.searchType, text)}</td>
-                        <td>{item.foundCount}</td>
+                        <td>{item.resultsCount}</td>
                         <td>
                             {item.searchType !== 'text' &&
-                                <Link to="/search-details">
+                                <Link to={`/search-details/${item.id}`}>
                                     <span className="glyphicon glyphicon-eye-open"></span>
                                 </Link>
                             }

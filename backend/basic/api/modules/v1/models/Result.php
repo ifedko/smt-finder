@@ -28,7 +28,12 @@ class Result extends ActiveRecord
     public function rules()
     {
         return [
-            [['url', 'searchType', 'createdAt', 'resultsCount'], 'required']
+            [['request_id', 'value'], 'required']
         ];
+    }
+
+    public function getRequest()
+    {
+        return $this->hasOne(Request::className(), ['id' => 'request_id']);
     }
 }

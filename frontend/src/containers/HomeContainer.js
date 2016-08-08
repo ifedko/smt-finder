@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { setBackUrl, changeSearchType, changeSearchUrl, changeSearchText, submitSearchForm } from '../actions';
+import { setBackUrl, changeSearchType, changeSearchUrl, changeSearchText, search } from '../actions';
 import SearchForm from '../components/SearchForm';
 import ResultList from '../components/ResultList';
 
@@ -18,12 +18,13 @@ class HomeContainer extends Component {
             search: PropTypes.shape({
                 activeSearchType: PropTypes.string.isRequired,
                 result: PropTypes.shape({
+                    id: PropTypes.number.isRequired,
                     searchType: PropTypes.string.isRequired,
                     url: PropTypes.string.isRequired,
-                    date: PropTypes.string.isRequired,
-                    foundCount: PropTypes.number.isRequired,
+                    createdAt: PropTypes.string.isRequired,
+                    resultsCount: PropTypes.number.isRequired,
                     text: PropTypes.string
-                }).isRequired
+                })
             }).isRequired,
             isLoading: PropTypes.bool.isRequired,
             setBackUrl: PropTypes.func.isRequired,
@@ -76,7 +77,7 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(changeSearchText(text));
         },
         handleSubmitSearchForm: (data) => {
-            dispatch(submitSearchForm(data));
+            dispatch(search(data));
         }
     };
 };

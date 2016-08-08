@@ -1,35 +1,64 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { changePageOfHistoryDetailsList } from '../actions';
+import { loadResultDetails, loadResultItems, addPageOfSearchDetailsList } from '../actions';
+import * as constants from '../constants';
 import ResultItem from '../components/ResultItem';
 
 class SearchDetailsContainer extends Component {
     static get propTypes() {
         return {
+            params: PropTypes.shape({
+                resultId: PropTypes.string
+            }),
             backUrl: PropTypes.string.isRequired,
-            details: PropTypes.shape({
-                searchType: PropTypes.string.isRequired,
-                url: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
-                items: PropTypes.array.isRequired,
-                itemsPageNumber: PropTypes.number.isRequired,
-                itemsPagesCount: PropTypes.number.isRequired,
-            }).isRequired,
+            data: PropTypes.shape({
+                id: PropTypes.number,
+                searchType: PropTypes.string,
+                url: PropTypes.string,
+                createdAt: PropTypes.string,
+                resultsCount: PropTypes.number
+            }),
+            items: PropTypes.array.isRequired,
+            pagination: PropTypes.shape({
+                pageNumber: PropTypes.number,
+                pagesCount: PropTypes.number
+            }),
             isLoading: PropTypes.bool.isRequired,
-            handleChangePage: PropTypes.func.isRequired
+            init: PropTypes.func.isRequired,
+            addPage: PropTypes.func.isRequired
         };
     }
 
+    constructor(props) {
+        super(props);
+        this.handleChangePage = this.handleChangePage.bind(this);
+    }
+
+    componentWillMount() {
+        const resultId = (this.props.params.resultId && Number(this.props.params.resultId) > 0)
+            ? Number(this.props.params.resultId)
+            : 0;
+        if (resultId > 0) {
+            this.props.init(resultId);
+        }
+    }
+
+    handleChangePage(pageNumber) {
+        if (this.props.data.id) {
+            this.props.addPage(this.props.data.id, pageNumber);
+        }
+    }
+
     render() {
-        const { details, handleChangePage, isLoading, backUrl } = this.props;
+        const { data, items, pagination, isLoading, backUrl } = this.props;
         return (
             <div>
                 <Link to={backUrl}>
                     <span className="glyphicon glyphicon-menu-left"></span> Назад
                 </Link>
-                {!isLoading &&
-                    <ResultItem details={details} handleChangePage={handleChangePage}/>
+                {!isLoading && data.id &&
+                    <ResultItem data={data} items={items} pagination={pagination} handleChangePage={this.handleChangePage}/>
                 }
             </div>
         );
@@ -39,15 +68,25 @@ class SearchDetailsContainer extends Component {
 const mapStateToProps = (state) => {
     return {
         backUrl: state.application.backUrl,
-        details: state.history.historyDetails,
+        data: state.history.historyDetails.data,
+        items: state.history.historyDetails.items,
+        pagination: {
+            pageNumber: state.history.historyDetails.pagination.pageNumber,
+            pagesCount: state.history.historyDetails.pagination.pagesCount,
+            itemsPerPage: constants.resultItemsPerPage
+        },
         isLoading: state.application.isLoading
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        handleChangePage: (pageNumber) => {
-            dispatch(changePageOfHistoryDetailsList(pageNumber));
+        init: (resultId, pageNumber) => {
+            dispatch(loadResultDetails(resultId))
+                .then(() => dispatch(loadResultItems(resultId, pageNumber)));
+        },
+        addPage: (resultId, pageNumber) => {
+            dispatch(loadResultItems(resultId, pageNumber, true));
         }
     };
 };

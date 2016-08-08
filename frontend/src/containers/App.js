@@ -20,13 +20,13 @@ class App extends Component {
         return (
             <div>
                 <Router
-                    onUpdate={() => window.scrollTo(0, 0)}
+                    //onEnter={() => window.scrollTo(0, 0)}
                     history={history}
                 >
                     <Route path="/" component={RootContainer}>
                         <IndexRoute component={HomeContainer} />
-                        <Route path="/history" component={HistoryContainer} />
-                        <Route path="/search-details" component={SearchDetailsContainer} />
+                        <Route path="/history(/page/:page)" component={HistoryContainer} />
+                        <Route path="/search-details/:resultId" component={SearchDetailsContainer} />
                     </Route>
                 </Router>
                 <DevTools />
